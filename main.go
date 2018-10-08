@@ -1,14 +1,17 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/codegangsta/negroni"
+	common "github.com/nttn9x/go-backend/common"
 	"github.com/nttn9x/go-backend/routers"
 )
 
 func main() {
+	common.InitializeLogging()
+
 	// Get the mux router object
 	router := routers.InitRoutes()
 
@@ -26,6 +29,8 @@ func main() {
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./build/index.html")
 	})
-	log.Println("Listening...")
+
+	fmt.Println("Starting... :8000")
+
 	server.ListenAndServe()
 }

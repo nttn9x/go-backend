@@ -2,7 +2,6 @@ package common
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/context"
@@ -23,7 +22,6 @@ type (
 func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	token := r.Header.Get("X-AppToken")
 	if token == "bXlVc2VybmFtZTpteVBhc3N3b3Jk" {
-		log.Printf("Authorized to the system")
 		context.Set(r, "user", "Shiju Varghese")
 		next(w, r)
 	} else {
@@ -38,8 +36,6 @@ func RespondWithError(w http.ResponseWriter, handlerError error, message string,
 		Message:    message,
 		HTTPStatus: code,
 	}
-
-	log.Printf("AppError]: %s\n", handlerError)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
