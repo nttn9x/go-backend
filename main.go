@@ -20,7 +20,12 @@ func main() {
 		Addr:    ":8000",
 		Handler: n,
 	}
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./build/static/"))))
 
+	// Serve index page on all unhandled routes
+	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./build/index.html")
+	})
 	log.Println("Listening...")
 	server.ListenAndServe()
 }
