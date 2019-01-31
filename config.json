@@ -1,0 +1,11 @@
+{
+  "Port": ":8000",
+  "Elastic": {
+    "Url": "http://es-local.xena.local:9204/",
+    "Prefix": "geberit"
+  },
+  "JWTSetting": {
+    "Key": "my-company-is-Xoontec",
+    "Issuer": "http://localhost:8000"
+  }
+}

@@ -3,8 +3,6 @@ package common
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/gorilla/context"
 )
 
 type (
@@ -17,17 +15,6 @@ type (
 		Data appError `json:"data"`
 	}
 )
-
-// Authorize check jwt
-func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	token := r.Header.Get("X-AppToken")
-	if token == "bXlVc2VybmFtZTpteVBhc3N3b3Jk" {
-		context.Set(r, "user", "Shiju Varghese")
-		next(w, r)
-	} else {
-		http.Error(w, "Not Authorized", 401)
-	}
-}
 
 // RespondWithError Respond error
 func RespondWithError(w http.ResponseWriter, handlerError error, message string, code int) {

@@ -2,5 +2,8 @@ package common
 
 // StartUp bootstrapps the application
 func StartUp() {
-	InitializeLogging()
+	// Initialize AppConfig variable
+	InitConfig()
+
+	InitLogging()
 }

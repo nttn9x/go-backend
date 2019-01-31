@@ -4,33 +4,25 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/codegangsta/negroni"
-	common "github.com/nttn9x/go-backend/common"
-	"github.com/nttn9x/go-backend/routers"
+	common "peakvise/common"
+	"peakvise/routers"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	common.InitializeLogging()
+	common.StartUp()
 
 	// Get the mux router object
 	router := routers.InitRoutes()
 
-	// Create a negroni instance
-	n := negroni.Classic()
-	n.UseHandler(router)
-
 	server := &http.Server{
-		Addr:    ":8000",
-		Handler: n,
+		Addr:    common.AppConfig.Port,
+		Handler: router,
 	}
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./build/static/"))))
 
-	// Serve index page on all unhandled routes
-	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./build/index.html")
-	})
-
-	fmt.Println("Starting... :8000")
+	log.Info("Starting the development server...")
+	log.Info(fmt.Sprintf("Use Port: %s", common.AppConfig.Port))
 
 	server.ListenAndServe()
 }

@@ -2,27 +2,39 @@ package elastic
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
-	"github.com/nttn9x/go-backend/models"
-	"gopkg.in/olivere/elastic.v6"
+	"peakvise/common"
+	"peakvise/models"
+
+	elastic "gopkg.in/olivere/elastic.v6"
 )
 
 // InitElasticSearch hello
-func InitElasticSearch() *elastic.Client {
-	client, _ := elastic.NewClient(elastic.SetURL("http://es-local.xena.local:9204"))
-	return client
+func initElasticSearch() (*elastic.Client, error) {
+	client, err := elastic.NewClient(elastic.SetURL(common.AppConfig.Elastic.URL))
+	return client, err
 
 }
 
 // SearchEs hello
-func SearchEs() *models.EsResult {
-	client := InitElasticSearch()
-	defer client.CloseIndex("peakvise_articles")
-	searchResult, _ := client.Search().Index("peakvise_articles").Query(elastic.NewMatchAllQuery()).Do(context.Background())
-	response := &models.EsResult{
-		PageIndex: 0,
-		PageSize:  10,
-		Total:     searchResult.Hits.TotalHits,
-		Result:    searchResult.Hits}
-	return response
+func SearchEs(w http.ResponseWriter) {
+	nameIndex := fmt.Sprintf("%s_%s", common.AppConfig.Elastic.Prefix, "articles")
+
+	client, err := initElasticSearch()
+	defer client.CloseIndex(nameIndex)
+
+	if err != nil {
+		common.RespondWithError(w, err, "", http.StatusInternalServerError)
+	} else {
+		searchResult, _ := client.Search().Index(nameIndex).Size(100).Query(elastic.NewMatchAllQuery()).Do(context.Background())
+		response := &models.EsResult{
+			PageIndex: 0,
+			PageSize:  100,
+			Total:     searchResult.Hits.TotalHits,
+			Result:    searchResult.Hits}
+
+		common.RespondWithJSON(w, models.Response{Data: response})
+	}
 }

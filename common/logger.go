@@ -1,26 +1,20 @@
 package common
 
 import (
-	"os"
-
+	colorable "github.com/mattn/go-colorable"
 	log "github.com/sirupsen/logrus"
 )
 
 // InitializeLogging ...
-func InitializeLogging() {
-	// You could set this to any `io.Writer` such as a file
-	file, err := os.OpenFile("logrus.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
-	if err == nil {
-		log.SetOutput(file)
+func InitLogging() {
+	// Log as JSON instead of the default ASCII formatter.
+	log.SetFormatter(&log.TextFormatter{ForceColors: true, FullTimestamp: true})
 
-		// if Environment == "production" {
-		log.SetFormatter(&log.JSONFormatter{})
-		// } else {
-		// The TextFormatter is default, you don't actually have to do this.
-		// log.SetFormatter(&log.TextFormatter{})
-		// }
-	} else {
-		log.Info("Failed to log to file, using default stderr")
-	}
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	log.SetOutput(colorable.NewColorableStdout())
+
+	// Only log the info severity or above.
+	log.SetLevel(log.InfoLevel)
 
 }
